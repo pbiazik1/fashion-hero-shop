@@ -1,0 +1,15 @@
+#!/bin/sh
+# Refuse to push to the upstream template repo (strzalex/fashion-hero-shop).
+# This fork is an independent project, not a contribution to the template.
+#
+# Enable with: git config core.hooksPath scripts/git-hooks
+
+remote_url="$2"
+
+if echo "$remote_url" | grep -qiE 'github\.com[:/]strzalex/fashion-hero-shop'; then
+  echo "Refused: push target is the upstream template repo ($remote_url)." >&2
+  echo "This fork is a standalone project — push only to your own fork (origin)." >&2
+  exit 1
+fi
+
+exit 0
