@@ -11,6 +11,9 @@ Zbudowane i zweryfikowane: `npm run build` (145 stron), `npm run lint` (0 proble
 baner→karta→klik) przechodzą lokalnie. Naprawa lint/PLP-filter (commit `4683d74`) była wprost
 zlecona przez właściciela produktu, nie samodzielną decyzją agenta.
 
+Od 2026-08-27 eventy trafiają też do PostHoga (projekt 580437, US Cloud) — działa lokalnie
+i na produkcji. Szczegóły i skutki dla pomiaru: sekcja "Analityka" w Aneksie na końcu.
+
 `/seller-panel` nie jest już traktowany jako jednorazowa scenografia pod ten jeden test.
 FashionHero nie miał wcześniej ŻADNEJ powierzchni dla sprzedawców, a cały Stream B (OST) kręci
 się wokół sprzedawców i przyszłych płatnych usług (2a monitoring cen, 3a dashboard marży, 3d
@@ -134,6 +137,8 @@ więc metryka "% odwiedzin karty" nie miała jak powstać. Decyzją właściciel
 | Karta fake-doora przeniesiona na `/seller-panel/sponsored` | Zmiana trasy, bez zmiany zakresu karty. |
 | Atrapa ekranu logowania na `/seller-panel/login` | **Łamie NEVER** ("Nigdy nie dodawaj logowania/rejestracji dla sprzedawców"). Nie waliduje danych, nie tworzy sesji, nie chroni panelu — panel działa też bezpośrednim URL-em. |
 | Link "Sprzedawaj" w `header.tsx` | **Łamie NEVER** ("Nigdy nie dotykaj istniejących komponentów kupującego"). Zatwierdzone przez ASK FIRST. |
+| PostHog (chmura US) wpięty w `src/app/layout.tsx` | **Łamie NEVER** ("Nigdy nie dotykaj istniejących stron/komponentów kupującego"). Analityki nie da się wpiąć niżej niż root layout — obejmuje więc cały serwis, nie tylko `/seller-panel`. Zlecone wprost przez właściciela produktu. |
+| `posthog-js` jako nowa zależność | Wymagało ASK FIRST ("Przed dodaniem nowej zależności/biblioteki (np. do trackingu zdarzeń)"). Zatwierdzone. |
 
 ### Wpływ na pomiar — do uwzględnienia przy interpretacji wyniku
 
@@ -145,3 +150,23 @@ więc metryka "% odwiedzin karty" nie miała jak powstać. Decyzją właściciel
 - Klikalność banera liczona jest osobno (`panel_banner_click`) i **nie jest** sygnałem sukcesu.
 - Atrapa logowania dokłada krok odpadu przed kartą — jeśli wynik wyjdzie poniżej progu, sprawdź
   najpierw, ilu ludzi odpadło na loginie, zanim uznasz to za brak zainteresowania ofertą.
+
+### Analityka (2026-08-27) — co PostHog zmienia w tym teście
+
+Eventy `fake_door_view`, `fake_door_click` i `panel_banner_click` idą teraz do PostHoga
+(projekt 580437, US Cloud) obok dotychczasowego `console.log` + `localStorage`, które zostają
+jako zapasowy licznik na demo bez skonfigurowanego klucza. Zweryfikowane na żywo, lokalnie
+i na produkcji (`fashion-hero-shop-chi-two.vercel.app`): eventy dochodzą z HTTP 200,
+z poprawnym `seller_id` i `timestamp`.
+
+- **Zbieranie jest szersze niż ten test.** Poza naszymi trzema eventami PostHog zbiera z CAŁEGO
+  serwisu `$pageview`, `$autocapture`, `$snapshot` (nagrania sesji), `$dead_click` i `$$heatmap`
+  — również ze stron kupującego. To wykracza poza granicę "ten feature żyje w izolacji" i przy
+  realnym ruchu ma konsekwencje prywatnościowe (nagrania sesji), a nie tylko pomiarowe.
+- **W projekcie są zdarzenia testowe.** Podczas weryfikacji integracji wpadły dwa komplety
+  `fake_door_view`/`fake_door_click` z `seller_id: kamil` (jeden z localhosta, jeden z produkcji).
+  Odsiej je przed liczeniem CTR — przy małej próbie zawyżą wynik.
+- **PostHog wycina boty po stronie klienta** (`navigator.webdriver`, `"HeadlessChrome"`
+  w `navigator.userAgentData.brands`), więc ruch crawlerów nie zawyży mianownika. To działa też
+  w drugą stronę: każdy zautomatyzowany test lejka domyślnie NIE wygeneruje eventów.
+- Próg ≥8% i definicja `fake_door_click` pozostają nietknięte.
