@@ -18,3 +18,15 @@ On a fresh clone, re-enable the hook with:
 ```bash
 git config core.hooksPath scripts/git-hooks
 ```
+
+## Current Feature: Sponsorowane Listingi (fake-door, test at-1a-1)
+
+Pracujemy teraz nad jednym, izolowanym feature'em spoza zakresu clone-website: fake-door prototyp
+testujący, czy sprzedawcy chcą płacić za widoczność w wynikach wyszukiwania. Pełny spec (Project
+Config addendum + Feature Spec, zweryfikowany spec-checkerem na 10/10) w:
+
+@docs/features/at-1a-1-sponsored-listings.md
+
+Ten spec ma pierwszeństwo nad ogólnymi zasadami clone-website z AGENTS.md w zakresie WYTYCZNYCH
+DESIGNU I GRANIC dla tego konkretnego widoku (nie jesteśmy już w fazie klonowania Allbirds) — ale
+zasady tech stacku/stylu kodu z AGENTS.md nadal obowiązują.
