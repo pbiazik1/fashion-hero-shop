@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist } from "next/font/google";
+import { PostHogProvider } from "@/components/posthog-provider";
 import { Shell } from "@/components/shell";
 import "./globals.css";
 
@@ -22,7 +23,9 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${geist.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col">
-        <Shell>{children}</Shell>
+        <PostHogProvider>
+          <Shell>{children}</Shell>
+        </PostHogProvider>
       </body>
     </html>
   );
