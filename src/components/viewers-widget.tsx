@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 
 function randomViewers(current: number): number {
   // Drift by ±3, stay between 4 and 47
@@ -8,25 +8,34 @@ function randomViewers(current: number): number {
   return Math.min(47, Math.max(4, current + delta));
 }
 
+/*
+ * count i rising musza zmieniac sie razem, wiec siedza w jednym stanie.
+ * Wczesniej rising wynikal z refa czytanego podczas renderu (react-hooks/refs).
+ *
+ * Wartosc startowa jest stala, a nie losowa: komponent renderuje sie takze na serwerze,
+ * wiec Math.random() w inicjalizatorze dawal inna liczbe na serwerze i na kliencie
+ * (niezgodnosc hydracji). Losujemy dopiero po zamontowaniu.
+ */
+const INITIAL_COUNT = 18;
+
 export function ViewersWidget() {
-  const [count, setCount] = useState(() => Math.floor(Math.random() * 20) + 10);
+  const [{ count, rising }, setViewers] = useState({
+    count: INITIAL_COUNT,
+    rising: true,
+  });
   const [bump, setBump] = useState(false);
-  const prevCount = useRef(count);
 
   useEffect(() => {
     const id = setInterval(() => {
-      setCount((c) => {
-        const next = randomViewers(c);
-        prevCount.current = c;
-        return next;
+      setViewers((prev) => {
+        const next = randomViewers(prev.count);
+        return { count: next, rising: next >= prev.count };
       });
       setBump(true);
       setTimeout(() => setBump(false), 400);
     }, 4000);
     return () => clearInterval(id);
   }, []);
-
-  const rising = count >= prevCount.current;
 
   return (
     <div className="flex items-center gap-2 text-xs text-warm-gray">

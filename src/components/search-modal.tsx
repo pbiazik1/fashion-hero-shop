@@ -6,7 +6,6 @@ import { CloseIcon, SearchIcon } from "./icons";
 import { products } from "@/data/products";
 
 interface SearchModalProps {
-  isOpen: boolean;
   onClose: () => void;
 }
 
@@ -14,7 +13,12 @@ function productGradient(hex: string): string {
   return `radial-gradient(ellipse at 50% 60%, ${hex}33 0%, ${hex}11 40%, #ece9e2 70%)`;
 }
 
-export function SearchModal({ isOpen, onClose }: SearchModalProps) {
+/*
+ * Montowany warunkowo przez header — gdy modal jest zamkniety, komponent nie istnieje.
+ * Dzieki temu stan zapytania czysci sie sam przy odmontowaniu, zamiast przez setState
+ * w efekcie (react-hooks/set-state-in-effect).
+ */
+export function SearchModal({ onClose }: SearchModalProps) {
   const [query, setQuery] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -25,29 +29,20 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
   }, [query]);
 
   useEffect(() => {
-    if (isOpen) {
-      inputRef.current?.focus();
-      document.body.style.overflow = "hidden";
-    } else {
-      setQuery("");
-      document.body.style.overflow = "";
-    }
+    inputRef.current?.focus();
+    document.body.style.overflow = "hidden";
     return () => {
       document.body.style.overflow = "";
     };
-  }, [isOpen]);
+  }, []);
 
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
       if (e.key === "Escape") onClose();
     }
-    if (isOpen) {
-      document.addEventListener("keydown", handleKeyDown);
-      return () => document.removeEventListener("keydown", handleKeyDown);
-    }
-  }, [isOpen, onClose]);
-
-  if (!isOpen) return null;
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [onClose]);
 
   return (
     <div className="fixed inset-0 z-50">

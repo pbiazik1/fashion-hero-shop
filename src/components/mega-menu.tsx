@@ -2,7 +2,6 @@
 
 import { useState, useRef, useCallback } from "react";
 import Link from "next/link";
-import { CloseIcon } from "./icons";
 
 type MenuKey = "MEN" | "WOMEN" | "SALE";
 
@@ -109,7 +108,6 @@ interface MegaMenuTriggerProps {
 
 export function MegaMenuNav() {
   const [activeMenu, setActiveMenu] = useState<MenuKey | null>(null);
-  const [mobileMenu, setMobileMenu] = useState<MenuKey | null>(null);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const handleMouseEnter = useCallback((key: MenuKey) => {
@@ -192,32 +190,8 @@ export function MegaMenuNav() {
         </div>
       )}
 
-      {/* Mobile menu items (rendered inside mobile drawer via prop) */}
-      <MegaMenuMobile
-        open={mobileMenu}
-        onOpen={setMobileMenu}
-        onClose={() => setMobileMenu(null)}
-        triggers={triggers}
-      />
     </>
   );
-}
-
-/** Mobile mega menu — rendered as expandable sections */
-function MegaMenuMobile({
-  open,
-  onOpen,
-  onClose,
-  triggers,
-}: {
-  open: MenuKey | null;
-  onOpen: (key: MenuKey) => void;
-  onClose: () => void;
-  triggers: MegaMenuTriggerProps[];
-}) {
-  // This component is used inside the mobile drawer in header.tsx
-  // It's exported so header can embed it
-  return null; // The mobile rendering is handled directly in the header
 }
 
 /** Standalone mobile mega menu content for embedding in header mobile drawer */

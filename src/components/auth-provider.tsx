@@ -1,6 +1,7 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect, useCallback } from "react";
+import { createContext, useContext, useCallback, useSyncExternalStore } from "react";
+import { createLocalStorageStore } from "@/lib/local-storage-store";
 
 interface User {
   email: string;
@@ -17,46 +18,34 @@ interface AuthContextValue {
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
-const STORAGE_KEY = "stepforward_user";
+const userStore = createLocalStorageStore<User | null>("stepforward_user", null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
-
-  useEffect(() => {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) {
-        setUser(JSON.parse(stored));
-      }
-    } catch {
-      // ignore parse errors
-    }
-  }, []);
+  const user = useSyncExternalStore(
+    userStore.subscribe,
+    userStore.getSnapshot,
+    userStore.getServerSnapshot
+  );
 
   const login = useCallback(async (email: string, _password: string) => {
     // Mock login — always succeeds
-    const newUser: User = {
+    userStore.set({
       email,
       firstName: email.split("@")[0],
       lastName: "",
-    };
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(newUser));
-    setUser(newUser);
+    });
   }, []);
 
   const register = useCallback(async (data: { email: string; password: string; firstName: string; lastName: string }) => {
-    const newUser: User = {
+    userStore.set({
       email: data.email,
       firstName: data.firstName,
       lastName: data.lastName,
-    };
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(newUser));
-    setUser(newUser);
+    });
   }, []);
 
   const logout = useCallback(() => {
-    localStorage.removeItem(STORAGE_KEY);
-    setUser(null);
+    userStore.set(null);
   }, []);
 
   return (

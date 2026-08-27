@@ -1,6 +1,7 @@
 "use client";
 
-import { createContext, useContext, useState, useCallback, useEffect } from "react";
+import { createContext, useContext, useCallback, useSyncExternalStore } from "react";
+import { createLocalStorageStore } from "@/lib/local-storage-store";
 
 interface WishlistContextType {
   wishlistItems: string[];
@@ -10,25 +11,9 @@ interface WishlistContextType {
 
 const WishlistContext = createContext<WishlistContextType | null>(null);
 
-const STORAGE_KEY = "stepforward-wishlist";
+const EMPTY: string[] = [];
 
-function loadWishlist(): string[] {
-  try {
-    if (typeof window === "undefined") return [];
-    const stored = localStorage.getItem(STORAGE_KEY);
-    return stored ? JSON.parse(stored) : [];
-  } catch {
-    return [];
-  }
-}
-
-function saveWishlist(items: string[]) {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
-  } catch {
-    // localStorage unavailable
-  }
-}
+const wishlistStore = createLocalStorageStore<string[]>("stepforward-wishlist", EMPTY);
 
 export function useWishlist() {
   const ctx = useContext(WishlistContext);
@@ -37,20 +22,19 @@ export function useWishlist() {
 }
 
 export function WishlistProvider({ children }: { children: React.ReactNode }) {
-  const [wishlistItems, setWishlistItems] = useState<string[]>([]);
-
-  useEffect(() => {
-    setWishlistItems(loadWishlist());
-  }, []);
+  const wishlistItems = useSyncExternalStore(
+    wishlistStore.subscribe,
+    wishlistStore.getSnapshot,
+    wishlistStore.getServerSnapshot
+  );
 
   const toggleWishlist = useCallback((productId: string) => {
-    setWishlistItems((prev) => {
-      const next = prev.includes(productId)
+    const prev = wishlistStore.getSnapshot();
+    wishlistStore.set(
+      prev.includes(productId)
         ? prev.filter((id) => id !== productId)
-        : [...prev, productId];
-      saveWishlist(next);
-      return next;
-    });
+        : [...prev, productId]
+    );
   }, []);
 
   const isWishlisted = useCallback(

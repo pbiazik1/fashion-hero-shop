@@ -89,9 +89,16 @@ function Checkbox({
 }) {
   return (
     <label className="flex items-center gap-2.5 py-1 cursor-pointer group">
+      <input
+        type="checkbox"
+        checked={checked}
+        onChange={onChange}
+        className="sr-only peer"
+      />
       <span
         className={cn(
           "w-4 h-4 rounded-sm border flex items-center justify-center transition-colors flex-shrink-0",
+          "peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-charcoal",
           checked
             ? "bg-charcoal border-charcoal"
             : "border-black/20 group-hover:border-black/40"

@@ -127,7 +127,7 @@ export function Header({ onCartOpen, cartCount = 0, wishlistCount = 0 }: HeaderP
       </div>
 
       {/* Search Modal */}
-      <SearchModal isOpen={searchOpen} onClose={() => setSearchOpen(false)} />
+      {searchOpen && <SearchModal onClose={() => setSearchOpen(false)} />}
     </header>
   );
 }

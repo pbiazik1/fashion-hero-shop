@@ -1,49 +1,45 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useMemo, useRef, useSyncExternalStore } from "react";
 import type { Product } from "@/types";
 import { products as allProducts } from "@/data/products";
 import { ProductCard } from "./product-card";
 import { ChevronLeftIcon, ChevronRightIcon } from "./icons";
+import { createLocalStorageStore } from "@/lib/local-storage-store";
 
-const STORAGE_KEY = "stepforward-recently-viewed";
 const MAX_ITEMS = 8;
 
-function loadRecentlyViewed(): string[] {
-  try {
-    if (typeof window === "undefined") return [];
-    const stored = localStorage.getItem(STORAGE_KEY);
-    return stored ? JSON.parse(stored) : [];
-  } catch {
-    return [];
-  }
-}
+const EMPTY: string[] = [];
 
-function saveRecentlyViewed(ids: string[]) {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(ids));
-  } catch {
-    // localStorage unavailable
-  }
-}
+const recentlyViewedStore = createLocalStorageStore<string[]>(
+  "stepforward-recently-viewed",
+  EMPTY
+);
 
 export function trackRecentlyViewed(productId: string) {
-  const ids = loadRecentlyViewed();
-  const next = [productId, ...ids.filter((id) => id !== productId)].slice(0, MAX_ITEMS);
-  saveRecentlyViewed(next);
+  const ids = recentlyViewedStore.getSnapshot();
+  recentlyViewedStore.set(
+    [productId, ...ids.filter((id) => id !== productId)].slice(0, MAX_ITEMS)
+  );
 }
 
 export function RecentlyViewed({ currentProductId }: { currentProductId: string }) {
-  const [recentProducts, setRecentProducts] = useState<Product[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    const ids = loadRecentlyViewed().filter((id) => id !== currentProductId);
-    const resolved = ids
-      .map((id) => allProducts.find((p) => p.id === id))
-      .filter((p): p is Product => !!p);
-    setRecentProducts(resolved);
-  }, [currentProductId]);
+  const ids = useSyncExternalStore(
+    recentlyViewedStore.subscribe,
+    recentlyViewedStore.getSnapshot,
+    recentlyViewedStore.getServerSnapshot
+  );
+
+  const recentProducts = useMemo(
+    () =>
+      ids
+        .filter((id) => id !== currentProductId)
+        .map((id) => allProducts.find((p) => p.id === id))
+        .filter((p): p is Product => !!p),
+    [ids, currentProductId]
+  );
 
   function scroll(direction: "left" | "right") {
     if (!scrollRef.current) return;
