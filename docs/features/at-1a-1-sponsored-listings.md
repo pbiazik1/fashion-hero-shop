@@ -4,6 +4,21 @@
 > assumption test `at-1a-1`, solution `sol-1a`, opportunity `opp-1` (Widoczność).
 > Feature Spec zweryfikowany skillem `spec-checker`: **10/10 READY** (2026-08-27).
 
+## Status (2026-08-27)
+
+Zbudowane i zweryfikowane: `npm run build` (145 stron), `npm run lint` (0 problemów) i
+`npm run verify` (Playwright, 32 asercje, w tym cały lejek at-1a-1 header→login→dashboard→
+baner→karta→klik) przechodzą lokalnie. Naprawa lint/PLP-filter (commit `4683d74`) była wprost
+zlecona przez właściciela produktu, nie samodzielną decyzją agenta.
+
+`/seller-panel` nie jest już traktowany jako jednorazowa scenografia pod ten jeden test.
+FashionHero nie miał wcześniej ŻADNEJ powierzchni dla sprzedawców, a cały Stream B (OST) kręci
+się wokół sprzedawców i przyszłych płatnych usług (2a monitoring cen, 3a dashboard marży, 3d
+Suite) — wszystkie docelowo żyją w tym samym panelu. To jest świadomy, celowo prosty zalążek
+portalu sprzedawcy, nie throwaway atrapa do wyrzucenia po tym jednym teście. Zakres na teraz
+zostaje mały (jeden fake-door + minimalny dashboard) — dalsza rozbudowa portalu to osobna,
+jeszcze nierozstrzygnięta decyzja.
+
 ## Typ prototypu: SMOKE TEST (landing + CTA)
 
 Testujemy **desirability** — czy sprzedawcy chcą licytować o widoczność. Nie testujemy usability
@@ -16,9 +31,9 @@ wizard-of-oz). Klik w CTA = jedyny sygnał, którego szukamy.
   % odwiedzin karty (symulowana próba n≈500 dla celów tego prototypu/certyfikacji — to case
   study, nie realny rollout do prawdziwych sprzedawców FashionHero).
 - **Próg sukcesu:** ≥8% → buduj płatny pilot (at-1a-2).
-- **Próg porażki:** <8% wg OST = "zbadaj głębiej, nie buduj jeszcze". Dodatkowy, autorski podział
-  (nieobecny w OST, do potwierdzenia): <3% = zabij koncept, 3–8% = strefa niejednoznaczna,
-  porozmawiaj jakościowo z nieklikającymi zanim zdecydujesz.
+- **Próg porażki:** <8% = nie buduj jeszcze / zbadaj głębiej. Zdecydowane (2026-08-27):
+  zostaje pojedynczy próg wprost z OST, bez dodatkowego podziału <3%/3-8% zaproponowanego
+  wcześniej przez doradcę - odrzucone jako niepotrzebna komplikacja.
 
 ---
 
@@ -48,9 +63,10 @@ ALWAYS:
 - Oznaczaj mockup wyników wyszukiwania etykietą "Sponsorowane".
 
 ASK FIRST:
-- Przed dodaniem nowej trasy do głównej nawigacji (`header.tsx`, `mega-menu.tsx`) — panel
-  sprzedawcy może być dostępny bezpośrednim URL-em, nie musi być wpięty w menu kupującego.
-  Powiedz mi, którą opcję wolisz, zanim to wepniesz.
+- Przed dodaniem nowej trasy do głównej nawigacji (`header.tsx`, `mega-menu.tsx`) poza tym, co
+  już wpięte (rozstrzygnięte: link "Sprzedawaj" w headerze, patrz Status wyżej).
+- Przed rozbudową `/seller-panel` o funkcje spoza tego jednego testu (2a/3a/3d) — to osobna,
+  jeszcze nie podjęta decyzja o zakresie portalu, nie zgaduj kiedy i jak go rozbudować.
 - Przed dodaniem nowej zależności/biblioteki (np. do trackingu zdarzeń).
 - Przed zmianą progu sukcesu (8%) lub definicji zdarzenia sukcesu.
 

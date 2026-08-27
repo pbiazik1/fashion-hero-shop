@@ -21,9 +21,10 @@ git config core.hooksPath scripts/git-hooks
 
 ## Current Feature: Sponsorowane Listingi (fake-door, test at-1a-1)
 
-Pracujemy teraz nad jednym, izolowanym feature'em spoza zakresu clone-website: fake-door prototyp
-testujący, czy sprzedawcy chcą płacić za widoczność w wynikach wyszukiwania. Pełny spec (Project
-Config addendum + Feature Spec, zweryfikowany spec-checkerem na 10/10) w:
+Status: zbudowane i zweryfikowane (`npm run build`/`lint`/`verify` przechodzą). `/seller-panel`
+to celowy, prosty zalążek portalu sprzedawcy (nie throwaway atrapa) — Stream B ma tam docelowo
+więcej płatnych funkcji, ale zakres na teraz zostaje ograniczony do tego jednego testu. Pełny
+spec + aktualny status w:
 
 @docs/features/at-1a-1-sponsored-listings.md
 
