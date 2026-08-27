@@ -14,7 +14,7 @@ const BENEFITS = [
   },
   {
     title: "Podbijasz pozycję w wynikach",
-    body: "Twoja oferta wskakuje z #15 na #2 dla wybranych fraz — zamiast czekać, aż ktoś dojdzie do drugiej strony.",
+    body: "Twoja oferta wskakuje z #15 na #1 dla wybranych fraz — zamiast czekać, aż ktoś dojdzie do drugiej strony.",
   },
   {
     title: "Etykieta „Sponsorowane”",

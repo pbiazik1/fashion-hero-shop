@@ -193,7 +193,7 @@ async function fakeDoorFunnel(browser) {
   check("Lejek — klik w baner policzony osobno", bannerClicks === "1", `panel_banner_click = ${bannerClicks}`);
 
   check("Karta — mockup #15 (przed)", await page.locator("text=/Dziś — pozycja #15/").isVisible(), "");
-  check("Karta — mockup #2 (po)", await page.locator("text=/Ze sponsorowaniem — pozycja #2/").isVisible(), "");
+  check("Karta — mockup #1 (po)", await page.locator("text=/Ze sponsorowaniem — pozycja #1/").isVisible(), "");
   check("Karta — etykieta „Sponsorowane”", (await page.locator("text=Sponsorowane").count()) >= 1, "");
   check("Karta — opis zawiera budzet", await page.locator("text=/dzienny budżet/i").isVisible(), "");
 
