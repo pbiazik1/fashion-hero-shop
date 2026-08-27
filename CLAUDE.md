@@ -2,11 +2,11 @@
 
 ## Git / GitHub Policy
 
-This repo is a personal fork (`biazikprzemek-arch/fashion-hero-shop`) of a template repo (`strzalex/fashion-hero-shop`). This is an independent project, not a contribution to the upstream template.
+This repo is a personal fork (`pbiazik1/fashion-hero-shop`) of a template repo (`strzalex/fashion-hero-shop`). This is an independent project, not a contribution to the upstream template.
 
 - The only remote is `origin`, pointing at the fork. Never add a push-capable `upstream` remote.
 - Always commit and push directly to `origin` (this fork). Never open a PR/branch comparison against `strzalex/fashion-hero-shop`.
-- If a PR is ever created with `gh pr create`, always pass an explicit `--repo biazikprzemek-arch/fashion-hero-shop` (or run `gh repo set-default biazikprzemek-arch/fashion-hero-shop` once beforehand) so it never defaults to the upstream template repo.
+- If a PR is ever created with `gh pr create`, always pass an explicit `--repo pbiazik1/fashion-hero-shop` (or run `gh repo set-default pbiazik1/fashion-hero-shop` once beforehand) so it never defaults to the upstream template repo.
 
 ### Local safety net
 
